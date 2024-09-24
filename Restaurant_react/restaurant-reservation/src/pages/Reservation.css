@@ -1,0 +1,12 @@
+.reservation{
+    margin-top: 100px;
+}
+
+table{
+    width: 100%;
+}
+
+tr,td {
+    padding: 4px;
+    text-align: center;
+}

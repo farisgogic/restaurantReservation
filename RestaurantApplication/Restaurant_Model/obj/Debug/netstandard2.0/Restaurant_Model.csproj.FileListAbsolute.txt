@@ -1,0 +1,10 @@
+C:\Users\User\OneDrive\Desktop\RestaurantApplication\Restaurant_Model\bin\Debug\netstandard2.0\Restaurant_Model.deps.json
+C:\Users\User\OneDrive\Desktop\RestaurantApplication\Restaurant_Model\bin\Debug\netstandard2.0\Restaurant_Model.dll
+C:\Users\User\OneDrive\Desktop\RestaurantApplication\Restaurant_Model\bin\Debug\netstandard2.0\Restaurant_Model.pdb
+C:\Users\User\OneDrive\Desktop\RestaurantApplication\Restaurant_Model\obj\Debug\netstandard2.0\Restaurant_Model.csproj.AssemblyReference.cache
+C:\Users\User\OneDrive\Desktop\RestaurantApplication\Restaurant_Model\obj\Debug\netstandard2.0\Restaurant_Model.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\OneDrive\Desktop\RestaurantApplication\Restaurant_Model\obj\Debug\netstandard2.0\Restaurant_Model.AssemblyInfoInputs.cache
+C:\Users\User\OneDrive\Desktop\RestaurantApplication\Restaurant_Model\obj\Debug\netstandard2.0\Restaurant_Model.AssemblyInfo.cs
+C:\Users\User\OneDrive\Desktop\RestaurantApplication\Restaurant_Model\obj\Debug\netstandard2.0\Restaurant_Model.csproj.CoreCompileInputs.cache
+C:\Users\User\OneDrive\Desktop\RestaurantApplication\Restaurant_Model\obj\Debug\netstandard2.0\Restaurant_Model.dll
+C:\Users\User\OneDrive\Desktop\RestaurantApplication\Restaurant_Model\obj\Debug\netstandard2.0\Restaurant_Model.pdb
