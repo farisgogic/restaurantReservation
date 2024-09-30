@@ -20,13 +20,13 @@ namespace Restaurant_Services
         {
             var filteredQuery = base.AddFilter(query, search);
 
-            if(search?.TableId != null)
+            if (search?.TableId != null)
             {
-                filteredQuery = filteredQuery.Where(x=>x.TableId == search.TableId);
+                filteredQuery = filteredQuery.Where(x => x.TableId == search.TableId);
             }
-            if(search?.UserId != null)
+            if (search?.UserId != null)
             {
-                filteredQuery = filteredQuery.Where(x=>x.UserId == search.UserId);
+                filteredQuery = filteredQuery.Where(x => x.UserId == search.UserId);
             }
 
             if (search?.DateReservation != null)
@@ -39,7 +39,12 @@ namespace Restaurant_Services
 
         public override Restaurant_Model.Reservation Insert(ReservationUpsertRequest insert)
         {
-            // Check if the table is already reserved on the requested date
+            var userExists = context.Users.Any(u => u.UserId == insert.UserId);
+            if (!userExists)
+            {
+                throw new Exception("User not found.");
+            }
+
             var isReserved = context.Reservations
                 .Any(r => r.TableId == insert.TableId && r.DateReservation.Date == insert.DateReservation.Date);
 
@@ -48,18 +53,15 @@ namespace Restaurant_Services
                 throw new Exception("Table is already reserved for this date.");
             }
 
-            insert.CreatedAt = DateTime.UtcNow; // Set the creation date
+            insert.CreatedAt = DateTime.UtcNow; 
 
-            // Call the base method to insert the reservation
             var reservation = base.Insert(insert);
 
-            // Update the table to set isOccupied to true
             var table = context.Tables.FirstOrDefault(t => t.TableId == insert.TableId);
             if (table != null)
             {
-                table.isOccupied = true; // Set the table as occupied
-                context.SaveChanges(); // Save changes to the database
-
+                table.isOccupied = true;
+                context.SaveChanges();
             }
             else
             {
@@ -69,5 +71,74 @@ namespace Restaurant_Services
             return reservation;
         }
 
+        public override Restaurant_Model.Reservation Update(int id, ReservationUpsertRequest update)
+        {
+            var existingReservation = context.Reservations.Find(id);
+
+            if (existingReservation == null)
+            {
+                throw new Exception("Reservation not found");
+            }
+
+            var userExists = context.Users.Any(u => u.UserId == update.UserId);
+            if (!userExists)
+            {
+                throw new Exception("User not found.");
+            }
+
+            var isReserved = context.Reservations
+                .Any(r => r.TableId == update.TableId && r.DateReservation.Date == update.DateReservation.Date && r.ReservationId != id);
+
+            if (isReserved)
+            {
+                throw new Exception("Table is already reserved for this date.");
+            }
+
+            var reservation = base.Update(id, update);
+
+            var table = context.Tables.FirstOrDefault(t => t.TableId == update.TableId);
+            if (table != null)
+            {
+                table.isOccupied = true;
+                context.SaveChanges();
+            }
+
+            if (existingReservation.TableId != update.TableId)
+            {
+                var oldTable = context.Tables.FirstOrDefault(t => t.TableId == existingReservation.TableId);
+                if (oldTable != null && !context.Reservations.Any(r => r.TableId == oldTable.TableId && r.DateReservation.Date == existingReservation.DateReservation.Date))
+                {
+                    oldTable.isOccupied = false;
+                    context.SaveChanges();
+                }
+            }
+
+            return reservation;
+        }
+
+
+        public override void Delete(int id)
+        {
+            var reservation = context.Reservations.Find(id);
+            if (reservation == null)
+            {
+                throw new Exception("Reservation not found");
+            }
+
+            base.Delete(id);
+
+            var hasOtherReservations = context.Reservations
+                .Any(r => r.TableId == reservation.TableId && r.DateReservation.Date == reservation.DateReservation.Date);
+
+            if (!hasOtherReservations)
+            {
+                var table = context.Tables.FirstOrDefault(t => t.TableId == reservation.TableId);
+                if (table != null)
+                {
+                    table.isOccupied = false;
+                    context.SaveChanges();
+                }
+            }
+        }
     }
 }

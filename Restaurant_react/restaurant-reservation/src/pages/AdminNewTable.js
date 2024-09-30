@@ -10,6 +10,8 @@ const AdminNewTable = () => {
     const [capacity, setCapacity] = useState('');
     const [isOccupied, setIsOccupied] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [editTableId, setEditTableId] = useState(null); // Dodano za praćenje uređivanja
+    const [newCapacity, setNewCapacity] = useState(''); // Dodano za novu vrijednost kapaciteta
 
     useEffect(() => {
         const fetchTables = async () => {
@@ -79,6 +81,46 @@ const AdminNewTable = () => {
         }
     };
 
+    // Funkcija za uređivanje kapaciteta stola
+    const handleEdit = async (tableId) => {
+        if (!newCapacity) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/Table/${tableId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ capacity: newCapacity }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update table capacity');
+            }
+
+            const updatedTables = tables.map(table => 
+                table.tableNumber === tableId ? { ...table, capacity: newCapacity } : table
+            );
+            setTables(updatedTables);
+            setEditTableId(null); // Izađi iz moda uređivanja
+        } catch (error) {
+            console.error('Error updating table capacity:', error);
+        }
+    };
+
+    // Funkcija za brisanje stola
+    const handleDelete = async (tableId) => {
+        try {
+            await fetch(`${API_BASE_URL}/Table/${tableId}`, {
+                method: 'DELETE',
+            });
+
+            setTables(tables.filter(table => table.tableNumber !== tableId));
+        } catch (error) {
+            console.error('Error deleting table:', error);
+        }
+    };
+
     return (
         <div className="admin-new-table">
             <Navbar />
@@ -88,13 +130,35 @@ const AdminNewTable = () => {
                     <tr>
                         <th>Table Number</th>
                         <th>Capacity</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
                     {tables.map((table) => (
                         <tr key={table.tableNumber}>
                             <td>{table.tableNumber}</td>
-                            <td>{table.capacity}</td>
+                            <td>
+                                {editTableId === table.tableNumber ? (
+                                    <input
+                                        type="number"
+                                        value={newCapacity}
+                                        onChange={(e) => setNewCapacity(e.target.value)}
+                                    />
+                                ) : (
+                                    table.capacity
+                                )}
+                            </td>
+                            <td>
+                                {editTableId === table.tableNumber ? (
+                                    <button onClick={() => handleEdit(table.tableNumber)}>Save</button>
+                                ) : (
+                                    <button onClick={() => setEditTableId(table.tableNumber)}>Edit</button>
+                                )}
+                            </td>
+                            <td>
+                                <button onClick={() => handleDelete(table.tableNumber)}>Delete</button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>

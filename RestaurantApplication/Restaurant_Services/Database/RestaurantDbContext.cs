@@ -25,7 +25,7 @@ namespace Restaurant_Services.Database
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source= .; Initial Catalog=Restoran; user=sa; Password=Konjic1981; TrustServerCertificate=True");
+                optionsBuilder.UseSqlServer("YOUR_CONNECTION_STRING");
 
             }
         }
